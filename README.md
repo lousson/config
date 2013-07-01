@@ -1,6 +1,9 @@
 Lousson: Config
 ===============
 
+[![Build Status](https://travis-ci.org/lousson/config.png?branch=master,0.4)]
+(https://travis-ci.org/lousson/config)
+
 The `lousson/Lousson_Config` package provides flexible facilities for
 application configuration and setup - in various formats.
 
@@ -42,7 +45,7 @@ The complete sourcecode and version history is avialabe at GitHub.
 One may either visit http://github.com/lousson/config or clone
 the source tree directly:
 
-	git clone git@github.com:lousson/config.git
+	git clone https://github.com/lousson/config.git
 
 GitHub is also used to track issues like bugs and feature-requests:
 
