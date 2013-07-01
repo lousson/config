@@ -101,7 +101,7 @@ class BuiltinConfig extends AbstractConfig
             $option = $this->options[$name];
             $option = $this->normalizeValue($option, "retrieve");
         }
-        else if(1 < func_num_args()) {
+        else if (1 < func_num_args()) {
             $option = $fallback;
         }
         else {
