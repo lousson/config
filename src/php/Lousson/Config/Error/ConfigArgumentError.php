@@ -32,7 +32,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /**
- *  Lousson\Config\Error\InvalidConfigError class definition
+ *  Lousson\Config\Error\ConfigArgumentError class definition
  *
  *  @package    org.lousson.config
  *  @copyright  (c) 2012 - 2013, The Lousson Project
@@ -49,7 +49,7 @@ use InvalidArgumentException;
 /**
  *  Exception raised in case of invalid configuration options
  *
- *  The InvalidConfigError class is a default implementation of the
+ *  The ConfigArgumentError class is a default implementation of the
  *  AnyConfigException. It extends PHP's native InvalidArgumentException
  *  and is used by the builtin classes whenever an attempt to retrieve
  *  a nonexistent option is encountered.
@@ -57,7 +57,7 @@ use InvalidArgumentException;
  *  @since      lousson/Lousson_Config-0.1.0
  *  @package    org.lousson.config
  */
-class InvalidConfigError
+class ConfigArgumentError
 extends InvalidArgumentException implements AnyConfigException
 {
 }

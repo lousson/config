@@ -85,10 +85,10 @@ class CallbackConfigTest extends AbstractConfigTest
      *  non-config exceptions raised by the callback do not lead to a
      *  violation of the AnyConfig interface.
      *
-     *  @expectedException          Lousson\Config\Error\RuntimeConfigError
+     *  @expectedException          Lousson\Config\Error\ConfigRuntimeError
      *  @test
      *
-     *  @throws \Lousson\Config\Error\RuntimeConfigError
+     *  @throws \Lousson\Config\Error\ConfigRuntimeError
      *          Raised in case the test is successful
      *
      *  @throws \Exception

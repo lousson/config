@@ -32,7 +32,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /**
- *  Lousson\Config\Error\InvalidConfigErrorTest class definition
+ *  Lousson\Config\Error\ConfigArgumentErrorTest class definition
  *
  *  @package    org.lousson.config
  *  @copyright  (c) 2013, The Lousson Project
@@ -47,12 +47,12 @@ use Lousson\AbstractExceptionTest;
 use ReflectionClass;
 
 /**
- *  A test case for the InvalidConfigError class
+ *  A test case for the ConfigArgumentError class
  *
  *  @since      lousson/Lousson_Config-0.2.0
  *  @package    org.lousson.config
  */
-class InvalidConfigErrorTest extends AbstractExceptionTest
+class ConfigArgumentErrorTest extends AbstractExceptionTest
 {
     /**
      *  Obtain the exception to test
@@ -68,7 +68,7 @@ class InvalidConfigErrorTest extends AbstractExceptionTest
      */
     public function getException(array $args)
     {
-        $class = "Lousson\\Config\\Error\\InvalidConfigError";
+        $class = "Lousson\\Config\\Error\\ConfigArgumentError";
         $reflection = new ReflectionClass($class);
         $instance = $reflection->newInstanceArgs($args);
         return $instance;

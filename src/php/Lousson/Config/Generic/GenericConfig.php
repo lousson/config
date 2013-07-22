@@ -46,8 +46,8 @@ namespace Lousson\Config\Generic;
 use Lousson\Config\AbstractConfig;
 
 /** Exceptions: */
-use Lousson\Config\Error\InvalidConfigError;
-use Lousson\Config\Error\RuntimeConfigError;
+use Lousson\Config\Error\ConfigArgumentError;
+use Lousson\Config\Error\ConfigRuntimeError;
 
 /**
  *  A generic implementation of the AnyConfig interface
@@ -78,9 +78,9 @@ class GenericConfig extends AbstractConfig
             $name = $this->normalizeName($name, "update");
             $value = $this->normalizeValue($value, "update");
         }
-        catch (\Lousson\Config\Error\RuntimeConfigError $error) {
+        catch (\Lousson\Config\Error\ConfigRuntimeError $error) {
             $message = $error->getMessage();
-            throw new InvalidConfigError($message);
+            throw new ConfigArgumentError($message);
         }
 
         $this->options[$name] = $value;
@@ -119,7 +119,7 @@ class GenericConfig extends AbstractConfig
         }
         else {
             $message = "Could not retrieve unknown option: $name";
-            throw new RuntimeConfigError($message);
+            throw new ConfigRuntimeError($message);
         }
 
         return $option;

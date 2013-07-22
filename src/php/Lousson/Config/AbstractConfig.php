@@ -49,7 +49,7 @@ use Lousson\Config\AnyConfig;
 use Lousson\Record\Builtin\BuiltinRecordUtil;
 
 /** Exceptions: */
-use Lousson\Config\Error\RuntimeConfigError;
+use Lousson\Config\Error\ConfigRuntimeError;
 
 /**
  *  An abstract base for AnyConfig implementations
@@ -75,7 +75,7 @@ abstract class AbstractConfig implements AnyConfig
      *  @return mixed
      *          The normalized option name is returned on success
      *
-     *  @throws \Lousson\Config\Error\RuntimeConfigError
+     *  @throws \Lousson\Config\Error\ConfigRuntimeError
      *          Raised in case the option name is invalid
      */
     final protected function normalizeName($name, $use)
@@ -88,7 +88,7 @@ abstract class AbstractConfig implements AnyConfig
             $class = get_class($error);
             $message = "Could not $use option: Caught $class";
             $code = $error->getCode();
-            throw new RuntimeConfigError($message, $code, $error);
+            throw new ConfigRuntimeError($message, $code, $error);
         }
     }
 
@@ -105,7 +105,7 @@ abstract class AbstractConfig implements AnyConfig
      *  @return mixed
      *          The normalized option value is returned on success
      *
-     *  @throws \Lousson\Config\Error\RuntimeConfigError
+     *  @throws \Lousson\Config\Error\ConfigRuntimeError
      *          Raised in case the option value is invalid
      */
     final protected function normalizeValue($value, $use)
@@ -118,7 +118,7 @@ abstract class AbstractConfig implements AnyConfig
             $class = get_class($error);
             $message = "Could not $use option: Caught $class";
             $code = $error->getCode();
-            throw new RuntimeConfigError($message, $code, $error);
+            throw new ConfigRuntimeError($message, $code, $error);
         }
     }
 }

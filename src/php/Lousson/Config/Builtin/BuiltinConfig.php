@@ -47,7 +47,7 @@ namespace Lousson\Config\Builtin;
 use Lousson\Config\AbstractConfig;
 
 /** Exceptions: */
-use Lousson\Config\Error\RuntimeConfigError;
+use Lousson\Config\Error\ConfigRuntimeError;
 
 /**
  *  Default implementation of the AnyConfig interface
@@ -106,7 +106,7 @@ class BuiltinConfig extends AbstractConfig
         }
         else {
             $message = "Could not retrieve unknown option: $name";
-            throw new RuntimeConfigError($message);
+            throw new ConfigRuntimeError($message);
         }
 
         return $option;

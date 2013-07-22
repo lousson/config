@@ -32,7 +32,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /**
- *  Lousson\Config\Error\RuntimeConfigError class definition
+ *  Lousson\Config\Error\ConfigRuntimeError class definition
  *
  *  @package    org.lousson.config
  *  @copyright  (c) 2013, The Lousson Project
@@ -49,7 +49,7 @@ use RuntimeException;
 /**
  *  Exception raised in case of internal errors
  *
- *  The RuntimeConfigError class is a default implementation of the
+ *  The ConfigRuntimeError class is a default implementation of the
  *  AnyConfigException. It extends PHP's native RuntimeException
  *  and is used by the builtin classes whenever an internal error is
  *  encountered.
@@ -57,7 +57,7 @@ use RuntimeException;
  *  @since      lousson/Lousson_Config-0.1.0
  *  @package    org.lousson.config
  */
-class RuntimeConfigError
+class ConfigRuntimeError
 extends RuntimeException implements AnyConfigException
 {
 }

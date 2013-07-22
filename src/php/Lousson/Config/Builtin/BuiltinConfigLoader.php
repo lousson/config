@@ -51,7 +51,7 @@ use Lousson\Config\Builtin\BuiltinConfig;
 use Lousson\Record\Builtin\BuiltinRecordManager;
 
 /** Exceptions: */
-use Lousson\Config\Error\RuntimeConfigError;
+use Lousson\Config\Error\ConfigRuntimeError;
 
 /**
  *  Default implementation of the AnyConfigLoader interface
@@ -107,7 +107,7 @@ class BuiltinConfigLoader implements AnyConfigLoader
             $class = get_class($error);
             $message = "Could not load config: Caught $class";
             $code = $error->getCode();
-            throw new RuntimeConfigError($message, $code, $error);
+            throw new ConfigRuntimeError($message, $code, $error);
         }
 
         $config = new BuiltinConfig($record);

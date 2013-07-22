@@ -47,7 +47,7 @@ use Lousson\Config\AbstractConfig;
 use Closure;
 
 /** Exceptions: */
-use Lousson\Config\Error\RuntimeConfigError;
+use Lousson\Config\Error\ConfigRuntimeError;
 
 /**
  *  A Closure-based implementation of the AnyConfig interface
@@ -107,7 +107,7 @@ class CallbackConfig extends AbstractConfig
             $class = get_class($error);
             $message = "Could not retrieve option: Caught $class";
             $code = $error->getCode();
-            throw new RuntimeConfigError($message, $code, $error);
+            throw new ConfigRuntimeError($message, $code, $error);
         }
 
         if (null !== $option) {
@@ -118,7 +118,7 @@ class CallbackConfig extends AbstractConfig
         }
         else {
             $message = "Could not retrieve unknown option: $name";
-            throw new RuntimeConfigError($message);
+            throw new ConfigRuntimeError($message);
         }
 
         return $option;
