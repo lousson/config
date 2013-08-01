@@ -236,7 +236,7 @@
   <!-- Generate package docs -->
   <target name="phpdoc">
     <mkdir dir="${project.review.logsdir}" />
-    <exec command="phpdoc -d ${project.src.phpdir} -t ${project.review.docsdir}" logoutput="true"/>
+    <exec command="phpdoc -d ${project.src.phpdir} -t ${project.review.docsdir} --title ${project.name}" logoutput="true"/>
     <echo message="You will find the PHPDoc for your project at: ${project.review.docsdir}/index.html"/>
     <phingcallifexists target="local.phpdoc"/>
   </target>
@@ -275,6 +275,7 @@
   <target name="build-vendor" depends="pear-package,setup-vendor">
     <echo>Populating vendor/ with dependencies</echo>
     <exec command="phix pear:register-channels" checkreturn="true" logoutput="true" />
+    <exec command="pear -c ${project.tmpdir}/pear-config config-set auto_discover 1" logoutput="true" checkreturn="true"/>
     <exec command="pear -c ${project.tmpdir}/pear-config install --alldeps ${project.tarfile}" logoutput="true" checkreturn="true"/>
     <echo/>
     <echo>Your vendor/ folder has been built.</echo>
@@ -407,6 +408,7 @@
     <if>
       <available file="${project.lastBuiltTarfile}"/>
       <then>
+        <exec command="pear -c ${project.tmpdir}/pear-config config-set auto_discover 1" checkreturn="true" logoutput="true" />
         <exec command="pear -c ${project.tmpdir}/pear-config install --alldeps -f ${project.lastBuiltTarfile}" logoutput="true" checkreturn="true"/>
         <phingcallifexists target="local.install-vendor"/>
       </then>
