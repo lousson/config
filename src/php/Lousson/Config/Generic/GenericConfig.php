@@ -42,9 +42,10 @@
  */
 namespace Lousson\Config\Generic;
 
+/** Interfaces: */
+use Lousson\Config\AnyConfigEntity;
 /** Dependencies: */
 use Lousson\Config\AbstractConfig;
-
 /** Exceptions: */
 use Lousson\Config\Error\ConfigArgumentError;
 use Lousson\Config\Error\ConfigRuntimeError;
@@ -58,7 +59,9 @@ use Lousson\Config\Error\ConfigRuntimeError;
  *  @since      lousson/Lousson_Config-0.2.0
  *  @package    org.lousson.config
  */
-class GenericConfig extends AbstractConfig
+class GenericConfig
+    extends AbstractConfig
+    implements AnyConfigEntity
 {
     /**
      *  Update the value of a particular option

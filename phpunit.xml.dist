@@ -16,6 +16,7 @@
             <directory suffix=".php">src/php</directory>
             <exclude>
                 <file>src/php/Lousson/Config/AnyConfig.php</file>
+                <file>src/php/Lousson/Config/AnyConfigEntity.php</file>
                 <file>src/php/Lousson/Config/AnyConfigException.php</file>
                 <file>src/php/Lousson/Config/AnyConfigLoader.php</file>
             </exclude>

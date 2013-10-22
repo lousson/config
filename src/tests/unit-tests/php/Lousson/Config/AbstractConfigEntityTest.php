@@ -32,7 +32,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /**
- *  Lousson\Config\GenericConfigTest class definition
+ *  Lousson\Config\AbstractConfigEntityTest class definition
  *
  *  @package    org.lousson.config
  *  @copyright  (c) 2012 - 2013, The Lousson Project
@@ -41,19 +41,24 @@
  *  @author     Mathias J. Hennig <mhennig at quirkies.org>
  *  @filesource
  */
-namespace Lousson\Config\Generic;
+namespace Lousson\Config;
 
 /** Dependencies: */
-use Lousson\Config\AbstractConfigEntityTest;
-use Lousson\Config\Generic\GenericConfig;
+use Lousson\Config\AnyConfig;
+use PHPUnit_Framework_TestCase;
 
 /**
- *  A test case for the GenericConfig implementation
+ *  Abstract test case for AnyConfig implementation
  *
- *  @since      lousson/Lousson_Config-0.2.0
+ *  The Lousson\Config\AbstractConfigEntityTest class is an abstract unit-test
+ *  for implementations of the AnyConfig interface. Authors may choose to
+ *  use this class as the base for their own tests, which allows them to
+ *  benefit from a basic coverage being provided already.
+ *
+ *  @since      lousson/Lousson_Config-0.1.0
  *  @package    org.lousson.config
  */
-final class GenericConfigTest extends AbstractConfigEntityTest
+abstract class AbstractConfigEntityTest extends AbstractConfigTest
 {
     /**
      *  Obtain the config entity to test
@@ -64,62 +69,29 @@ final class GenericConfigTest extends AbstractConfigEntityTest
      *  @return \Lousson\Config\AnyConfigEntity
      *          A config entity is returned on success
      */
-    public function getConfigEntity()
+    abstract public function getConfigEntity();
+
+    /**
+     *  Obtain the config to test
+     *
+     *  The getConfig() method returns the instance of the AnyConfig
+     *  interface that is to be tested. It will be pre-set with the given
+     *  $options.
+     *
+     *  @param  array   $options    The options to apply
+     *
+     *  @return \Lousson\Config\AnyConfig
+     *          A config instance is returned on success
+     */
+    final public function getConfig(array $options)
     {
-        $config = new GenericConfig();
+        $config = $this->getConfigEntity();
+
+        foreach ($options as $key => $value) {
+            $config->setOption($key, $value);
+        }
+
         return $config;
-    }
-
-    /**
-     *  Test the setOption() method
-     *
-     *  The testSetInvalidName() method is a test that verifies that any
-     *  attempt to set an option with an invalid name will trigger an
-     *  exception.
-     *
-     *  @param  string          $name               The config option name
-     *  @param  array           $data               The config option data
-     *
-     *  @dataProvider           provideInvalidTestParameters
-     *  @expectedException      Lousson\Config\AnyConfigException
-     *  @test
-     *
-     *  @throws \Lousson\Config\AnyConfigException
-     *          Raised in case the test is successful
-     *
-     *  @throws \Exception
-     *          Raised in case of an implementation error
-     */
-    public function testSetInvalidName($name, array $data)
-    {
-        $config = $this->getConfig($data);
-        $config->setOption($name, $data);
-    }
-
-    /**
-     *  Test the setOption() method
-     *
-     *  The testSetInvalidName() method is a test that verifies that any
-     *  attempt to set an option with an invalid value will trigger an
-     *  exception.
-     *
-     *  @param  string          $name               The config option name
-     *  @param  array           $data               The config option data
-     *
-     *  @dataProvider           provideValidTestParameters
-     *  @expectedException      Lousson\Config\AnyConfigException
-     *  @test
-     *
-     *  @throws \Lousson\Config\AnyConfigException
-     *          Raised in case the test is successful
-     *
-     *  @throws \Exception
-     *          Raised in case of an implementation error
-     */
-    public function testSetInvalidValue($name, array $data)
-    {
-        $config = $this->getConfig($data);
-        $config->setOption($name, array("foo" => "bar", "baz"));
     }
 }
 
