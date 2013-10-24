@@ -36,7 +36,8 @@
  *
  *  @package    org.lousson.config
  *  @copyright  (c) 2012 - 2013, The Lousson Project
- *  @license    http://opensource.org/licenses/bsd-license.php New BSD License
+ *  @license    http://opensource.org/licenses/bsd-license.php New BSD
+ *              License
  *  @author     Nils Gotzhein <nils.gotzhein at gmail.com>
  *  @filesource
  */
@@ -53,19 +54,33 @@ use Lousson\Config\Error\ConfigRuntimeError;
 /**
  *  A Closure-based implementation of the AnyConfigEntity interface
  *
- *  The Lousson\Config\Callback\CallbackConfigSQL is a flexible implementation
- *  of the AnyConfigEntity interface, using a Closure to retrieve config values.
+ *  The Lousson\Config\Callback\CallbackConfigSQL is a flexible
+ *  implementation of the AnyConfigEntity interface, using a Closure to
+ *  retrieve config values.
  *  
- *  This implementation communicates with the closure via SQL, enabling storage
- *  of the configuration data in a SQL compatible storage engine.
+ *  This implementation communicates with the closure via SQL, enabling
+ *  storage of the configuration data in a SQL compatible storage engine.
  *
  *  @since      lousson/Lousson_Config-0.2.0
  *  @package    org.lousson.config
  */
 class CallbackConfigSQL
-	extends AbstractConfig
-	implements AnyConfigEntity
+    extends AbstractConfig
+    implements AnyConfigEntity
 {
+
+    /**
+     * Prefix string indicating that the following data is json encoded
+     *
+     * Constant holing the internaly used prefix for storing multi-
+     * dimensional data in a SQL data field. The prefix is appended
+     * to field-content which contains json-encoded data. This way
+     * it can be identified whether the data is json encoded or not.
+     *
+     * @var string
+     */
+    const JSON_INDICATOR = 'json:';
+
     /**
      *  Create a config instance
      *
@@ -74,31 +89,32 @@ class CallbackConfigSQL
      *  same interface as the getOption() method, otherwise the behavior
      *  is undefined.
      *
-     *  @param  Closure             $callback 		The config callback
-     *  @param	string				$tableName		The name of the SQL table
-     *  											to use in all outgoing statements
-     *  @param	string				$keyField		The name of the column representing
-     *  											the property name
-     *  @param	string				$valueField		The name of the column containing
-     *  											the values
-     *  @param	array (optional)	$index			array containing additional key/value
-     *  											restrictions to apply to the WHERE-
-     *  											part of all outgoing SQL queries
-     *  											Expects column names as keys and
-     *  											their required values as array values
+     *  @param Closure          $callback   The config callback
+     *  @param string           $tableName  The name of the SQL table to
+     *                                      use in all outgoing statements
+     *  @param string           $keyField   The name of the column
+     *                                      representing the property name
+     *  @param string           $valueField The name of the column
+     *                                      containing the values
+     *  @param array (optional) $index      array containing additional
+     *                                      key/value restrictions to apply
+     *                                      to the WHERE-part of all
+     *                                      outgoing SQL queries Expects
+     *                                      column names as keys and their
+     *                                      required values as array values
      */
-	public function __construct(
-		Closure $callback,
-		$tableName,
-		$keyField,
-		$valueField,
-		array $index = array()
-	) {
-		
-		$this->generateSql( $valueField, $tableName, $index, $keyField );
-		
-		$this->callback = $callback;
-        
+    public function __construct(
+        Closure $callback,
+        $tableName,
+        $keyField,
+        $valueField,
+        array $index = array()
+    ) {
+
+        $this->generateSql($valueField, $tableName, $index, $keyField);
+
+        $this->callback = $callback;
+
     }
 
     /**
@@ -116,20 +132,22 @@ class CallbackConfigSQL
     public function setOption($name, $value)
     {
 
-    	if( is_array( $value ) || null === $value ) {
-    		$value = self::JSON_INDICATOR . json_encode($value);
-    	}
-    	
-    	$exists = $this->hasOption($name);
-    	
-    	$stack = $exists ? $this->sql_update : $this->sql_insert;
-		$stack[1] = $value;
-		$stack[] = $name;
+        if (is_array($value) || null === $value) {
+            $value = self::JSON_INDICATOR . json_encode($value);
+        }
 
-		try {
-			call_user_func_array($this->callback, $stack);
-    	}
-		catch (\Exception $error) {
+        $exists = $this->hasOption($name);
+
+        $stack = $exists ? $this->sqlUpdate : $this->sqlInsert;
+        $format = array_shift($stack);
+        array_unshift($stack, $value);
+        array_unshift($stack, $format);
+        $stack[] = $name;
+
+        try {
+            call_user_func_array($this->callback, $stack);
+        }
+        catch (\Exception $error) {
             $class = get_class($error);
             $message = "Could not write option: Caught $class";
             $code = $error->getCode();
@@ -137,7 +155,7 @@ class CallbackConfigSQL
         }
 
     }
-    
+
     /**
      *  Obtain the value of a particular option
      *
@@ -160,11 +178,11 @@ class CallbackConfigSQL
      */
     public function getOption($name, $fallback = null)
     {
-        
-    	$name = $this->normalizeName($name, "retrieve");
-        $stack = $this->sql_select;
-		$stack[] = $name;
-		$useFallback = null !== $fallback;
+
+        $name = $this->normalizeName($name, "retrieve");
+        $stack = $this->sqlSelect;
+        $stack[] = $name;
+        $useFallback = (null !== $fallback || 2 <= func_num_args());
 
         try {
             $value = call_user_func_array($this->callback, $stack);
@@ -177,16 +195,22 @@ class CallbackConfigSQL
         }
         $value = $this->normalizeValue($value, "retrieve");
         if (null === $value) {
-        	if($useFallback) {
-        		$value = $fallback;
-        	}
-        	else {
-        		$message = "Could not retrieve unknown option: $name";
-        		throw new ConfigRuntimeError($message);
-        	}
+            if ($useFallback) {
+                $value = $fallback;
+            }
+            else {
+                $message = "Could not retrieve unknown option: $name";
+                throw new ConfigRuntimeError($message);
+            }
         }
-		elseif( 0 === strpos( $value, self::JSON_INDICATOR ) ) {
-        	$value = json_decode( substr( $value, strlen( self::JSON_INDICATOR ) ), true );
+        elseif (0 === strpos($value, self::JSON_INDICATOR)) {
+            $value = json_decode(
+                substr(
+                    $value,
+                    strlen(self::JSON_INDICATOR)
+                ),
+                true
+            );
         }
 
         return $value;
@@ -206,20 +230,20 @@ class CallbackConfigSQL
      */
     public function hasOption($name)
     {
-    	try {
-    		$name = $this->normalizeName($name, "retrieve");
-	        $stack = $this->sql_select;
-			$stack[] = $name;
+        try {
+            $name = $this->normalizeName($name, "retrieve");
+            $stack = $this->sqlSelect;
+            $stack[] = $name;
             $value = call_user_func_array($this->callback, $stack);
-           	$result = false;
-            if(null !== $value) {
-            	$value = $this->normalizeValue($value, "retrieve");
-            	$result = true;
+               $result = false;
+            if (null !== $value) {
+                $value = $this->normalizeValue($value, "retrieve");
+                $result = true;
             }
         }
         catch (\Exception $error) {
             $result = false;
-        	trigger_error("Caught $error", E_USER_WARNING);
+            trigger_error("Caught $error", E_USER_WARNING);
         }
 
         return $result;
@@ -233,128 +257,141 @@ class CallbackConfigSQL
      * done in preparation for later read/write operations invoked by the
      * set/get/hasOption methods.
      * 
-     * @param string $valueField	The name of the column containing
-     *  							the values
-     * @param string $tableName		The name of the SQL table
-     *  							to use in all outgoing statements
-     * @param array $index			array containing additional key/value
-     *  							restrictions to apply to the WHERE-
-     *  							part of all outgoing SQL queries
-     *  							Expects column names as keys and
-     *  							their required values as array values
-     * @param string $keyField		The name of the column representing
-     *  							the property name
+     * @param string $valueField    The name of the column containing
+     *                              the values
+     * @param string $tableName        The name of the SQL table
+     *                              to use in all outgoing statements
+     * @param array $index            array containing additional key/value
+     *                              restrictions to apply to the WHERE-
+     *                              part of all outgoing SQL queries
+     *                              Expects column names as keys and
+     *                              their required values as array values
+     * @param string $keyField        The name of the column representing
+     *                              the property name
      */
-	private function generateSql( $valueField, $tableName, $index, $keyField ) {
-		
-		$sql_select = array(
-			"SELECT {$valueField} FROM {$tableName} WHERE"
-		);
-		$sql_insert = array(
-			"INSERT INTO {$tableName} SET {$valueField} = %s"
-		);
-		$sql_update = array(
-			"UPDATE {$tableName} SET {$valueField} = %s WHERE"
-		);
-		$sql_delete = array(
-			"DELETE FROM {$tableName} WHERE"
-		);
-		
-		$stack = array();
-		
-		//fill where with key-value pairs from $index array
-		foreach ($index as $key => $value) {
-			$fragment = "{$key} = %s AND";
-			$sql_select[] = $fragment;
-			$sql_insert[] = $fragment;
-			$sql_update[] = $fragment;
-			$sql_delete[] = $fragment;
-			$stack[] = $value;
-		}
-		
-		//fill where with key-value pairs from $index array
-		$fragment = "{$keyField} = %s\n";
-		$sql_select[] = $fragment;
-		$sql_insert[] = $fragment;
-		$sql_update[] = $fragment;
-		$sql_delete[] = $fragment;
-		
-		$this->sql_select = array_merge(
-			array(implode(" ", $sql_select)),
-			$stack
-		);
-		$this->sql_insert = array_merge(
-			array(implode(" ", $sql_insert), NULL),
-			$stack
-		);
-		$this->sql_update = array_merge(
-			array(implode(" ", $sql_update), NULL),
-			$stack
-		);
-		$this->sql_delete = array_merge(
-			array(implode(" ", $sql_delete), NULL),
-			$stack
-		);
-		
-	}
-	
-	/**
-	 * Constant holing the internaly used prefix for storing multi-
-	 * dimensional data in a SQL data field. The prefix is appended
-	 * to field-content which contains json-encoded data. This way
-	 * it can be identified whether the data is json encoded or not.
-	 * 
-	 * @var string
-	 */
-	CONST JSON_INDICATOR = 'json:';
-	
+    private function generateSql(
+        $valueField,
+        $tableName,
+        $index,
+        $keyField
+    ){
+
+        $sqlSelect = array(
+            "SELECT {$valueField} FROM {$tableName} WHERE"
+        );
+        $sqlInsert = array(
+            "INSERT INTO {$tableName} SET {$valueField} = '%s',"
+        );
+        $sqlUpdate = array(
+            "UPDATE {$tableName} SET {$valueField} = '%s' WHERE"
+        );
+        $sqlDelete = array(
+            "DELETE FROM {$tableName} WHERE"
+        );
+
+        $stack = array();
+
+        //fill where with key-value pairs from $index array
+        foreach ($index as $key => $value) {
+        	$delimiter = " AND";
+        	$delimiterInsert = ", ";
+            $fragment = "{$key} = '%s'";
+            $sqlSelect[] = $fragment . $delimiter;
+            $sqlInsert[] = $fragment . $delimiterInsert;
+            $sqlUpdate[] = $fragment . $delimiter;
+            $sqlDelete[] = $fragment . $delimiter;
+            $stack[] = $value;
+        }
+
+        //fill where with key-value pairs from $index array
+        $fragment = "{$keyField} = '%s'\n";
+        $sqlSelect[] = $fragment;
+        $sqlInsert[] = $fragment;
+        $sqlUpdate[] = $fragment;
+        $sqlDelete[] = $fragment;
+
+        $this->sqlSelect = array_merge(
+            array(implode(" ", $sqlSelect)),
+            $stack
+        );
+        $this->sqlInsert = array_merge(
+            array(implode(" ", $sqlInsert)),
+            $stack
+        );
+        $this->sqlUpdate = array_merge(
+            array(implode(" ", $sqlUpdate)),
+            $stack
+        );
+        $this->sqlDelete = array_merge(
+            array(implode(" ", $sqlDelete)),
+            $stack
+        );
+
+    }
+
     /**
+     * printf format statement (with args) for SELECT queries
+     * 
      * Internal property holding the SQL query for SELECT operations
      * used in getOption and hasOption methods. This property is filled
-     * by internal method "generateSql".
+     * by internal method "generateSql". Contains a printf-format string
+     * in the first array element and their associated fill-in args as
+     * following elements.
      * 
-     * @var string
+     * @var array
      */
-    private $sql_select;
-    
+    private $sqlSelect;
+
     /**
+     * printf format statement (with args) for INSERT queries
+     * 
      * Internal property holding the SQL query for INSERT operations
      * used in getOption and hasOption methods. This property is filled
-     * by internal method "generateSql".
+     * by internal method "generateSql". Contains a printf-format string
+     * in the first array element and their associated fill-in args as
+     * following elements.
      * 
-     * @var string
+     * @var array
      */
-    private $sql_insert;
-    
+    private $sqlInsert;
+
     /**
+     * printf format statement (with args) for UPDATE queries
+     * 
      * Internal property holding the SQL query for UPDATE operations
      * used in getOption and hasOption methods. This property is filled
-     * by internal method "generateSql".
+     * by internal method "generateSql". Contains a printf-format string
+     * in the first array element and their associated fill-in args as
+     * following elements.
      * 
-     * @var string
+     * @var array
      */
-    private $sql_update;
-    
+    private $sqlUpdate;
+
     /**
+     * printf format statement (with args) for DELETE queries
+     * 
      * Internal property holding the SQL query for DELETE operations
      * used in getOption and hasOption methods. This property is filled
-     * by internal method "generateSql".
+     * by internal method "generateSql". Contains a printf-format string
+     * in the first array element and their associated fill-in args as
+     * following elements.
      * 
-     * @var string
+     * @var array
      */
-    private $sql_delete;
-    
+    private $sqlDelete;
+
     /**
-     * The configuration callback for data interaction. Should expect SQL
-     * format string from one of the according properties ($sql_select,
-     * $sql_insert, $sql_update, $sql_delete) as first parameter, and args
-     * for filling into the SQL format string by sprintf. Should return
-     * the read data in case of SELECT queries and null in case of data
-     * manipulation queries.
+     * The configuration callback for data interaction.
+     * 
+     * Should expect SQL format string from one of the according
+     * properties ($sqlSelect, $sqlInsert, $sqlUpdate, $sqlDelete)
+     * as first parameter, and args for filling into the SQL format string
+     * by sprintf. Should return the read data in case of SELECT queries
+     * and null in case of data manipulation queries.
      *
      * @var \Closure
      */
     private $callback;
 
 }
-

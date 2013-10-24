@@ -36,7 +36,8 @@
  *
  *  @package    org.lousson.config
  *  @copyright  (c) 2012 - 2013, The Lousson Project
- *  @license    http://opensource.org/licenses/bsd-license.php New BSD License
+ *  @license    http://opensource.org/licenses/bsd-license.php New BSD
+                License
  *  @author     Nils Gotzhein <nils.gotzhein at gmail.com>
  *  @filesource
  */
@@ -53,20 +54,22 @@ use Lousson\Config\Error\ConfigRuntimeError;
 /**
  *  A Closure-based implementation of the AnyConfigEntity interface
  *
- *  The Lousson\Config\Callback\CallbackConfigSQLSimple is a flexible implementation
- *  of the AnyConfigEntity interface, using a Closure to retrieve config values.
+ *  The Lousson\Config\Callback\CallbackConfigSQLSimple is a flexible
+ *  implementation of the AnyConfigEntity interface, using a Closure to
+ *  retrieve config values.
  *  
- *  This implementation communicates with the closure via SQL, enabling storage
- *  of the configuration data in a SQL compatible storage engine. Compared to its
- *  parent class, this variant offers a few less parameters to pass, which is
- *  therefore easier to handle and to implement, but also less flexible this way.
+ *  This implementation communicates with the closure via SQL, enabling
+ *  storage of the configuration data in a SQL compatible storage engine.
+ *  Compared to its parent class, this variant offers a few less parameters
+ *  to pass, which is therefore easier to handle and to implement, but also
+ *  less flexible this way.
  *
  *  @since      lousson/Lousson_Config-0.2.0
  *  @package    org.lousson.config
  */
 class CallbackConfigSQLSimple
-	extends CallbackConfigSQL
-	implements AnyConfigEntity
+    extends CallbackConfigSQL
+    implements AnyConfigEntity
 {
     /**
      *  Create a config instance
@@ -76,29 +79,38 @@ class CallbackConfigSQLSimple
      *  same interface as the getOption() method, otherwise the behavior
      *  is undefined.
      *
-     *  @param  Closure             $callback 		The config callback
-     *  @param	string				$tablePrefix	The prefix for the name of the SQL
-     *  											table. (The full table name is stored
-     *												in a constant)
-     *  @param	array (optional)	$index			array containing additional key/value
-     *  											restrictions to apply to the WHERE-
-     *  											part of all outgoing SQL queries
-     *  											Expects column names as keys and
-     *  											their required values as array values
+     *  @param  Closure          $callback      The config callback
+     *  @param  string           $tablePrefix   The prefix for the name of
+     *                                          the SQL table. (The full
+     *                                          table name is stored in a
+     *                                          constant)
+     *  @param  array (optional) $index         array containing additional
+     *                                          key/value restrictions to
+     *                                          apply to the WHERE-part of
+     *                                          all outgoing SQL queries
+     *                                          Expects column names as
+     *                                          keys and their required
+     *                                          values as array values
      */
-	public function __construct(
-		Closure $callback,
-		$tablePrefix,
-		array $index = array()
-	) {
-		
-		$tableName = $tablePrefix . self::TABLE_NAME;
-		$keyField	= self::KEY_FIELD;
-		$valueField	= self::VALUE_FIELD;
-		parent::__construct($callback, $tableName, $keyField, $valueField, $index);
-        
+    public function __construct(
+        Closure $callback,
+        $tablePrefix,
+        array $index = array()
+    ) {
+
+        $tableName  = $tablePrefix . self::TABLE_NAME;
+        $keyField   = self::KEY_FIELD;
+        $valueField = self::VALUE_FIELD;
+        parent::__construct(
+            $callback,
+            $tableName,
+            $keyField,
+            $valueField,
+            $index
+        );
+
     }
-    
+
     /**
      * Default value for the parameter $tableName of the constructor
      * of the parent class.
@@ -106,7 +118,7 @@ class CallbackConfigSQLSimple
      * @var string
      */
     const TABLE_NAME = 'config';
-    
+
     /**
      * Default value for the parameter $keyField of the constructor
      * of the parent class.
@@ -114,7 +126,7 @@ class CallbackConfigSQLSimple
      * @var string
      */
     const KEY_FIELD = 'option_name';
-    
+
     /**
      * Default value for the parameter $valueField of the constructor
      * of the parent class.
@@ -124,4 +136,3 @@ class CallbackConfigSQLSimple
     const VALUE_FIELD = 'option_value';
 
 }
-
