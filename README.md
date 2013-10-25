@@ -61,11 +61,6 @@ existing data tables, which comply with a certain pattern. The following
 SQL statements serve the purpose of providing CREATE TABLE statements
 for exemplary use.
 
-    create database config;
-    GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER, CREATE VIEW, SHOW VIEW, CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE, EVENT ON config.* TO 'sdbrw'@'%','sedo'@'%';
-    GRANT SELECT, SHOW VIEW, CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE ON  config.* TO 'sdbro'@'%','sedoread'@'%';  
-    GRANT SELECT, SHOW VIEW ON config.* TO 'sdban'@'%'; 
-
     CREATE  TABLE config.member_config (
         id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
         option_name enum('sedo.marketplace.bcp.rows_per_page') NOT NULL,
