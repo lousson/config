@@ -53,23 +53,23 @@ use Lousson\Config\Error\ConfigRuntimeError;
 use Lousson\Config\Error\ConfigArgumentError;
 
 /**
- *  A Closure-based implementation of the AnyConfigEntity interface
+ * A Closure-based implementation of the AnyConfigEntity interface
  *
- *  The Lousson\Config\Callback\CallbackConfigSQL is a flexible
- *  implementation of the AnyConfigEntity interface, using a Closure to
- *  retrieve config values.
- *  
- *  This implementation calls the closure, passing prepared SQL compatible
- *  statements. The Closure is meant to use the prepared SQL statements to
- *  communicate with an SQL compatible storage engine.
- *  
- *  The Closure expects sprintf-compatible parameters. For example, the
- *  closure could generate the sql query with the following command:
- *  $sql = call_user_func_array( 'sprintf', func_get_args() );
- *  @see CallbackConfigSQLTest::getCallback() for an example.
+ * The Lousson\Config\Callback\CallbackConfigSQL is a flexible
+ * implementation of the AnyConfigEntity interface, using a Closure to
+ * retrieve config values.
+ * 
+ * This implementation calls the closure, passing prepared SQL compatible
+ * statements. The Closure is meant to use the prepared SQL statements to
+ * communicate with an SQL compatible storage engine.
+ * 
+ * The Closure expects sprintf-compatible parameters. For example, the
+ * closure could generate the sql query with the following command:
+ * $sql = call_user_func_array( 'sprintf', func_get_args() );
+ * @see CallbackConfigSQLTest::getCallback() for an example.
  *
- *  @since      lousson/Lousson_Config-0.2.0
- *  @package    org.lousson.config
+ * @since      lousson/Lousson_Config-0.2.0
+ * @package    org.lousson.config
  */
 class CallbackConfigSQL
     extends AbstractConfig
