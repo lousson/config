@@ -85,7 +85,7 @@ class CallbackConfigSQL
     /**
      *  Create a config instance
      *
-     *  The constructor allows to pass a Closure $getter that is used to
+     *  The constructor allows to pass a Closure $callback that is used to
      *  retrieve configuration values. This callback must provide the exact
      *  same interface as the getOption() method, otherwise the behavior
      *  is undefined.
