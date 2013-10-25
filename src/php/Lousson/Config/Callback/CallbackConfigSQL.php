@@ -112,7 +112,7 @@ class CallbackConfigSQL
         array $index = array()
     ) {
 
-        $this->generateSql($valueField, $tableName, $index, $keyField);
+        $this->generateSql($tableName, $keyField, $valueField, $index);
 
         $this->callback = $callback;
 
@@ -299,24 +299,25 @@ class CallbackConfigSQL
      * done in preparation for later read/write operations invoked by the
      * set/get/hasOption methods.
      * 
+     * @param string $tableName     The name of the SQL table
+     *                              to use in all outgoing statements
+     * @param string $keyField      The name of the column representing
+     *                              the property name
      * @param string $valueField    The name of the column containing
      *                              the values
-     * @param string $tableName        The name of the SQL table
-     *                              to use in all outgoing statements
-     * @param array $index            array containing additional key/value
+     * @param array $index          array containing additional key/value
      *                              restrictions to apply to the WHERE-
      *                              part of all outgoing SQL queries
      *                              Expects column names as keys and
      *                              their required values as array values
-     * @param string $keyField        The name of the column representing
-     *                              the property name
+
      */
     private function generateSql(
-        $valueField,
         $tableName,
-        $index,
-        $keyField
-    ){
+        $keyField,
+        $valueField,
+        $index
+    ) {
 
         $sqlSelect = array(
             "SELECT {$valueField} FROM {$tableName} WHERE"
