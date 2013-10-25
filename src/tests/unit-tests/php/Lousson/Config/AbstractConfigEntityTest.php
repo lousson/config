@@ -93,5 +93,113 @@ abstract class AbstractConfigEntityTest extends AbstractConfigTest
 
         return $config;
     }
+    
+    /**
+     *  Test the setOption() method
+     *
+     *  The testSetInvalidName() method is a test that verifies that any
+     *  attempt to set an option with an invalid name will trigger an
+     *  exception.
+     *
+     *  @param  string          $name               The config option name
+     *  @param  array           $data               The config option data
+     *
+     *  @dataProvider           provideInvalidTestParameters
+     *  @expectedException      Lousson\Config\AnyConfigException
+     *  @test
+     *
+     *  @throws \Lousson\Config\AnyConfigException
+     *          Raised in case the test is successful
+     *
+     *  @throws \Exception
+     *          Raised in case of an implementation error
+     */
+    public function testSetInvalidName($name, array $data)
+    {
+    	$config = $this->getConfig($data);
+    	$config->setOption($name, $data);
+    }
+    
+    /**
+     *  Test the setOption() method
+     *
+     *  The testSetInvalidName() method is a test that verifies that any
+     *  attempt to set an option with an invalid value will trigger an
+     *  exception.
+     *
+     *  @param  string          $name               The config option name
+     *  @param  array           $data               The config option data
+     *
+     *  @dataProvider           provideValidTestParameters
+     *  @expectedException      Lousson\Config\AnyConfigException
+     *  @test
+     *
+     *  @throws \Lousson\Config\AnyConfigException
+     *          Raised in case the test is successful
+     *
+     *  @throws \Exception
+     *          Raised in case of an implementation error
+     */
+    public function testSetInvalidValue($name, array $data)
+    {
+    	$config = $this->getConfig($data);
+    	$config->setOption($name, array("foo" => "bar", "baz"));
+    }
+    
+    /**
+     *  Test the delOption() method
+     *
+     *  The testDelInvalidOption() method is a test that verifies that the
+     *  delOption() method raises an exception for invalid option names.
+     *
+     *  @param  string          $name               The config option name
+     *  @param  array           $data               The config option data
+     *
+     *  @dataProvider           provideInvalidTestParameters
+     *  @expectedException      Lousson\Config\AnyConfigException
+     *  @test
+     *
+     *  @throws \Lousson\Config\AnyConfigException
+     *          Raised in case the test is successful
+     *
+     *  @throws \Exception
+     *          Raised in case of an implementation error
+     */
+    public function getDelInvalidOption($name, array $data)
+    {
+    	$config = $this->getConfig($data);
+    	$config->delOption($name);
+    }
+    
+    /**
+     *  Test the delOption() method
+     *
+     *  The testDelValidOption() method is a smoke test for the config's
+     *  delOption() method.
+     *
+     *  @param  string          $name               The config option name
+     *  @param  array           $data               The config option data
+     *
+     *  @dataProvider           provideValidTestParameters
+     *  @test
+     *
+     *  @throws \PHPUnit_Framework_AssertionFailedError
+     *          Raised in case an assertion has failed
+     *
+     *  @throws \Exception
+     *          Raised in case of an implementation error
+     */
+    public function testDelValidOption($name, array $data)
+    {
+    	$config = $this->getConfig($data);
+    	$option = $config->delOption($name);
+    	$expect = $config->hasOption($name);
+    
+    	$this->assertFalse(
+    		$expect, sprintf(
+    			"After invocation of %s::delOption(\"%s\") hasOption must".
+    			" return false", get_class($config), $name
+    		));
+    }
 }
 

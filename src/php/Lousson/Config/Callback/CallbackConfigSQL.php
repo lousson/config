@@ -50,6 +50,7 @@ use Closure;
 
 /** Exceptions: */
 use Lousson\Config\Error\ConfigRuntimeError;
+use Lousson\Config\Error\ConfigArgumentError;
 
 /**
  *  A Closure-based implementation of the AnyConfigEntity interface
@@ -131,6 +132,14 @@ class CallbackConfigSQL
      */
     public function setOption($name, $value)
     {
+        try {
+            $name = $this->normalizeName($name, "update");
+            $value = $this->normalizeValue($value, "update");
+        }
+        catch (\Lousson\Config\Error\ConfigRuntimeError $error) {
+            $message = $error->getMessage();
+            throw new ConfigArgumentError($message);
+        }
 
         if (is_array($value) || null === $value) {
             $value = self::JSON_INDICATOR . json_encode($value);
@@ -153,7 +162,40 @@ class CallbackConfigSQL
             $code = $error->getCode();
             throw new ConfigRuntimeError($message, $code, $error);
         }
+    }
 
+    /**
+     *  Delete the value of a particular option
+     *
+     *  The delOption() method is used to remove the given option
+     *  identified by the given $name.
+     *
+     *  @param  string              $name           The option name
+     *
+     *  @throws \Lousson\Config\AnyConfigException
+     *          Raised in case the $name is malformed
+     */
+    public function delOption($name) {
+        try {
+            $name = $this->normalizeName($name, "delete");
+        }
+        catch (\Lousson\Config\Error\ConfigRuntimeError $error) {
+            $message = $error->getMessage();
+            throw new ConfigArgumentError($message);
+        }
+
+        $stack = $this->sqlDelete;
+        $stack[] = $name;
+
+        try {
+            call_user_func_array($this->callback, $stack);
+        }
+        catch (\Exception $error) {
+            $class = get_class($error);
+            $message = "Could not write option: Caught $class";
+            $code = $error->getCode();
+            throw new ConfigRuntimeError($message, $code, $error);
+        }
     }
 
     /**
@@ -293,8 +335,8 @@ class CallbackConfigSQL
 
         //fill where with key-value pairs from $index array
         foreach ($index as $key => $value) {
-        	$delimiter = " AND";
-        	$delimiterInsert = ", ";
+            $delimiter = " AND";
+            $delimiterInsert = ", ";
             $fragment = "{$key} = '%s'";
             $sqlSelect[] = $fragment . $delimiter;
             $sqlInsert[] = $fragment . $delimiterInsert;

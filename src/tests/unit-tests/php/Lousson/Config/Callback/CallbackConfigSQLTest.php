@@ -142,6 +142,32 @@ class CallbackConfigSQLTest extends AbstractConfigEntityTest
     	$config = $this->getConfigEntity($callback);
     	$config->setOption("test", null);
     }
+    
+    /**
+     *  Test the internal error handling
+     *
+     *  The testDelErrorOption() method is a test case that verifies that
+     *  non-config exceptions raised by the callback do not lead to a
+     *  violation of the AnyConfig interface.
+     *
+     *  @expectedException          Lousson\Config\Error\ConfigRuntimeError
+     *  @test
+     *
+     *  @throws \Lousson\Config\Error\ConfigRuntimeError
+     *          Raised in case the test is successful
+     *
+     *  @throws \Exception
+     *          Raised in case of an implementation error
+     */
+    public function testDelErrorOption()
+    {
+    	$callback = function($name, $fallback) {
+    		throw new \DomainException("foo bar baz");
+    	};
+    
+    	$config = $this->getConfigEntity($callback);
+    	$config->delOption("test");
+    }
 
     /**
      *  Test the internal error handling
@@ -213,7 +239,7 @@ class CallbackConfigSQLTest extends AbstractConfigEntityTest
 			}
 
 			$cacheKey = implode( ':', $parameter );
-			
+
 			if('INSERT' === $operation || 'UPDATE' === $operation) {
 				$cache[$cacheKey] = $value;
 			}
@@ -224,7 +250,6 @@ class CallbackConfigSQLTest extends AbstractConfigEntityTest
 				$res = array_key_exists( $cacheKey, $cache ) ? $cache[ $cacheKey ] : null;
 				return $res;
 			}
-			
 			
     	};
 

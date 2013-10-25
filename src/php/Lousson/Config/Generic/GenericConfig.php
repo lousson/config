@@ -90,6 +90,29 @@ class GenericConfig
     }
 
     /**
+     *  Delete the value of a particular option
+     *
+     *  The delOption() method is used to remove the given option
+     *  identified by the given $name.
+     *
+     *  @param  string              $name           The option name
+     *
+     *  @throws \Lousson\Config\AnyConfigException
+     *          Raised in case the $name is malformed
+     */
+    public function delOption($name) {
+        try {
+            $name = $this->normalizeName($name, "delete");
+        }
+        catch (\Lousson\Config\Error\ConfigRuntimeError $error) {
+            $message = $error->getMessage();
+            throw new ConfigArgumentError($message);
+        }
+
+        unset($this->options[$name]);
+    }
+
+    /**
      *  Obtain the value of a particular option
      *
      *  The getOption() method will return the value associated with the

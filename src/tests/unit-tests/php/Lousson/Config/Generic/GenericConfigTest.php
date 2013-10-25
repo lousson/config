@@ -70,56 +70,5 @@ final class GenericConfigTest extends AbstractConfigEntityTest
         return $config;
     }
 
-    /**
-     *  Test the setOption() method
-     *
-     *  The testSetInvalidName() method is a test that verifies that any
-     *  attempt to set an option with an invalid name will trigger an
-     *  exception.
-     *
-     *  @param  string          $name               The config option name
-     *  @param  array           $data               The config option data
-     *
-     *  @dataProvider           provideInvalidTestParameters
-     *  @expectedException      Lousson\Config\AnyConfigException
-     *  @test
-     *
-     *  @throws \Lousson\Config\AnyConfigException
-     *          Raised in case the test is successful
-     *
-     *  @throws \Exception
-     *          Raised in case of an implementation error
-     */
-    public function testSetInvalidName($name, array $data)
-    {
-        $config = $this->getConfig($data);
-        $config->setOption($name, $data);
-    }
-
-    /**
-     *  Test the setOption() method
-     *
-     *  The testSetInvalidName() method is a test that verifies that any
-     *  attempt to set an option with an invalid value will trigger an
-     *  exception.
-     *
-     *  @param  string          $name               The config option name
-     *  @param  array           $data               The config option data
-     *
-     *  @dataProvider           provideValidTestParameters
-     *  @expectedException      Lousson\Config\AnyConfigException
-     *  @test
-     *
-     *  @throws \Lousson\Config\AnyConfigException
-     *          Raised in case the test is successful
-     *
-     *  @throws \Exception
-     *          Raised in case of an implementation error
-     */
-    public function testSetInvalidValue($name, array $data)
-    {
-        $config = $this->getConfig($data);
-        $config->setOption($name, array("foo" => "bar", "baz"));
-    }
 }
 

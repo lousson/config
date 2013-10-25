@@ -58,7 +58,7 @@ interface AnyConfigEntity
      *  Update the value of a particular option
      *
      *  The setOption() method is used to assign the given $value to the
-     *  option identified by the given $key.
+     *  option identified by the given $name.
      *
      *  @param  string              $name           The option name
      *  @param  mixed               $value          The option value
@@ -67,5 +67,18 @@ interface AnyConfigEntity
      *          Raised in case the $name or $value is malformed
      */
     public function setOption($name, $value);
+
+    /**
+     *  Delete the value of a particular option
+     *
+     *  The delOption() method is used to remove the given option
+     *  identified by the given $name.
+     *
+     *  @param  string              $name           The option name
+     *
+     *  @throws \Lousson\Config\AnyConfigException
+     *          Raised in case the $name is malformed
+     */
+    public function delOption($name);
 }
 
