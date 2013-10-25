@@ -54,12 +54,13 @@ use Lousson\Config\Error\ConfigRuntimeError;
 /**
  *  A Closure-based implementation of the AnyConfigEntity interface
  *
- *  The Lousson\Config\Callback\CallbackConfigSQLSimple is a flexible
+ *  The Lousson\Config\Callback\CallbackConfigSQL is a flexible
  *  implementation of the AnyConfigEntity interface, using a Closure to
  *  retrieve config values.
  *  
- *  This implementation communicates with the closure via SQL, enabling
- *  storage of the configuration data in a SQL compatible storage engine.
+ *  This implementation calls the closure, passing prepared SQL compatible
+ *  statements. The Closure is meant to use the prepared SQL statements to
+ *  communicate with an SQL compatible storage engine.
  *  Compared to its parent class, this variant offers a few less parameters
  *  to pass, which is therefore easier to handle and to implement, but also
  *  less flexible this way.
@@ -74,7 +75,7 @@ class CallbackConfigSQLSimple
     /**
      *  Create a config instance
      *
-     *  The constructor allows to pass a Closure $getter that is used to
+     *  The constructor allows to pass a Closure $callback that is used to
      *  retrieve configuration values. This callback must provide the exact
      *  same interface as the getOption() method, otherwise the behavior
      *  is undefined.

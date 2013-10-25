@@ -55,34 +55,57 @@ use Closure;
  */
 class CallbackConfigSQLTest extends AbstractConfigEntityTest
 {
-	
+    /**
+     * Example value for the parameter $tableName of the constructor
+     * of the tested class.
+     *
+     * @var string
+     */
+    const TABLE_NAME = 'table';
+    
+    /**
+     * Example value for the parameter $keyField of the constructor
+     * of the tested class.
+     *
+     * @var string
+     */
+    const KEY_FIELD = 'key_field';
+    
+    /**
+     * Example value for the parameter $valueField of the constructor
+     * of the tested class.
+     *
+     * @var string
+     */
+    const VALUE_FIELD = 'valueField';
+    
     /**
      *  Obtain the config entity to test
      *
      *  The getConfigEntity() method returns the AnyConfigEntity object
      *  that is about to be tested.
      *
-     *	@param	$callback	Closure
+     *    @param    $callback    Closure
      *  @return \Lousson\Config\AnyConfigEntity
      *          A config entity is returned on success
      */
     public function getConfigEntity( Closure $callback = null )
     {
- 		if(null === $callback) {
-    		$callback = $this->getCallback();
- 		}
-    	
-    	$index = array(
-    		'entity_key' => 'entity_value'
-    	);
-    	
+         if(null === $callback) {
+            $callback = $this->getCallback();
+         }
+        
+        $index = array(
+            'entity_key' => 'entity_value'
+        );
+        
         $config = new CallbackConfigSQL(
-			$callback,
-			self::TABLE_NAME,
-			self::KEY_FIELD,
-			self::VALUE_FIELD,
-			$index
-		);
+            $callback,
+            self::TABLE_NAME,
+            self::KEY_FIELD,
+            self::VALUE_FIELD,
+            $index
+        );
         return $config;
     }
 
@@ -130,17 +153,17 @@ class CallbackConfigSQLTest extends AbstractConfigEntityTest
      */
     public function testSetErrorOption()
     {
-    	$callback = function() {
-    		$parameter = func_get_args();
-    		$format = array_shift($parameter);
-    		$operation = strstr($format, ' ', true);
-    		if('INSERT' === $operation || 'UPDATE' === $operation) {
-    			throw new \DomainException("foo bar baz");
-    		}
-    	};
+        $callback = function() {
+            $parameter = func_get_args();
+            $format = array_shift($parameter);
+            $operation = strstr($format, ' ', true);
+            if('INSERT' === $operation || 'UPDATE' === $operation) {
+                throw new \DomainException("foo bar baz");
+            }
+        };
     
-    	$config = $this->getConfigEntity($callback);
-    	$config->setOption("test", null);
+        $config = $this->getConfigEntity($callback);
+        $config->setOption("test", null);
     }
     
     /**
@@ -161,12 +184,12 @@ class CallbackConfigSQLTest extends AbstractConfigEntityTest
      */
     public function testDelErrorOption()
     {
-    	$callback = function($name, $fallback) {
-    		throw new \DomainException("foo bar baz");
-    	};
+        $callback = function($name, $fallback) {
+            throw new \DomainException("foo bar baz");
+        };
     
-    	$config = $this->getConfigEntity($callback);
-    	$config->delOption("test");
+        $config = $this->getConfigEntity($callback);
+        $config->delOption("test");
     }
 
     /**
@@ -194,31 +217,7 @@ class CallbackConfigSQLTest extends AbstractConfigEntityTest
         $config = new CallbackConfigSQL($callback);
         $config->hasOption("test");
     }
-    
-    /**
-     * Example value for the parameter $tableName of the constructor
-     * of the tested class.
-     *  
-     * @var string
-     */
-    const TABLE_NAME = 'table';
-    
-    /**
-     * Example value for the parameter $keyField of the constructor
-     * of the tested class.
-     * 
-     * @var string
-     */
-    const KEY_FIELD = 'key_field';
-    
-    /**
-     * Example value for the parameter $valueField of the constructor
-     * of the tested class.
-     * 
-     * @var string
-     */
-    const VALUE_FIELD = 'valueField';
-    
+
     /**
      * Method providing a valid callback for passing to the constructor
      * of the tested class. Analyzes the inpute data and stores it in a
@@ -227,31 +226,31 @@ class CallbackConfigSQLTest extends AbstractConfigEntityTest
      * @return mixed
      */
     final protected function getCallback() {
-    	$test = $this;
-    	return function() use($test) {
-    		static $cache = array();
-    		$parameter = func_get_args();
-    		$format = array_shift($parameter);
-    		$test->assertInternalType("string", $format);
-			$operation = strstr($format, ' ', true);
-			if('INSERT' === $operation || 'UPDATE' === $operation) {
-				$value = array_shift($parameter);
-			}
+        $test = $this;
+        return function() use($test) {
+            static $cache = array();
+            $parameter = func_get_args();
+            $format = array_shift($parameter);
+            $test->assertInternalType("string", $format);
+            $operation = strstr($format, ' ', true);
+            if('INSERT' === $operation || 'UPDATE' === $operation) {
+                $value = array_shift($parameter);
+            }
 
-			$cacheKey = implode( ':', $parameter );
+            $cacheKey = implode( ':', $parameter );
 
-			if('INSERT' === $operation || 'UPDATE' === $operation) {
-				$cache[$cacheKey] = $value;
-			}
-			elseif('DELETE' === $operation && array_key_exists( $cacheKey, $cache )) {
-				unset( $cache[ $cacheKey ] );
-			}
-			elseif('SELECT' === $operation) {
-				$res = array_key_exists( $cacheKey, $cache ) ? $cache[ $cacheKey ] : null;
-				return $res;
-			}
-			
-    	};
+            if('INSERT' === $operation || 'UPDATE' === $operation) {
+                $cache[$cacheKey] = $value;
+            }
+            elseif('DELETE' === $operation && array_key_exists( $cacheKey, $cache )) {
+                unset( $cache[ $cacheKey ] );
+            }
+            elseif('SELECT' === $operation) {
+                $res = array_key_exists( $cacheKey, $cache ) ? $cache[ $cacheKey ] : null;
+                return $res;
+            }
+            
+        };
 
     }
 

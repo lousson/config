@@ -59,8 +59,14 @@ use Lousson\Config\Error\ConfigArgumentError;
  *  implementation of the AnyConfigEntity interface, using a Closure to
  *  retrieve config values.
  *  
- *  This implementation communicates with the closure via SQL, enabling
- *  storage of the configuration data in a SQL compatible storage engine.
+ *  This implementation calls the closure, passing prepared SQL compatible
+ *  statements. The Closure is meant to use the prepared SQL statements to
+ *  communicate with an SQL compatible storage engine.
+ *  
+ *  The Closure expects sprintf-compatible parameters. For example, the
+ *  closure could generate the sql query with the following command:
+ *  $sql = call_user_func_array( 'sprintf', func_get_args() );
+ *  @see CallbackConfigSQLTest::getCallback() for an example.
  *
  *  @since      lousson/Lousson_Config-0.2.0
  *  @package    org.lousson.config
@@ -122,7 +128,7 @@ class CallbackConfigSQL
      *  Update the value of a particular option
      *
      *  The setOption() method is used to assign the given $value to the
-     *  option identified by the given $key.
+     *  option identified by the given $name.
      *
      *  @param  string              $name           The option name
      *  @param  mixed               $value          The option value
