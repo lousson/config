@@ -42,9 +42,10 @@
  */
 namespace Lousson\Config\Generic;
 
+/** Interfaces: */
+use Lousson\Config\AnyConfigEntity;
 /** Dependencies: */
 use Lousson\Config\AbstractConfig;
-
 /** Exceptions: */
 use Lousson\Config\Error\ConfigArgumentError;
 use Lousson\Config\Error\ConfigRuntimeError;
@@ -58,7 +59,9 @@ use Lousson\Config\Error\ConfigRuntimeError;
  *  @since      lousson/Lousson_Config-0.2.0
  *  @package    org.lousson.config
  */
-class GenericConfig extends AbstractConfig
+class GenericConfig
+    extends AbstractConfig
+    implements AnyConfigEntity
 {
     /**
      *  Update the value of a particular option
@@ -84,6 +87,29 @@ class GenericConfig extends AbstractConfig
         }
 
         $this->options[$name] = $value;
+    }
+
+    /**
+     *  Delete the value of a particular option
+     *
+     *  The delOption() method is used to remove the given option
+     *  identified by the given $name.
+     *
+     *  @param  string              $name           The option name
+     *
+     *  @throws \Lousson\Config\AnyConfigException
+     *          Raised in case the $name is malformed
+     */
+    public function delOption($name) {
+        try {
+            $name = $this->normalizeName($name, "delete");
+        }
+        catch (\Lousson\Config\Error\ConfigRuntimeError $error) {
+            $message = $error->getMessage();
+            throw new ConfigArgumentError($message);
+        }
+
+        unset($this->options[$name]);
     }
 
     /**

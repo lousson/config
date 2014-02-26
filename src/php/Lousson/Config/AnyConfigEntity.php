@@ -2,7 +2,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 textwidth=75: *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Copyright (c) 2012 - 2013, The Lousson Project                        *
+ * Copyright (c) 2013, The Lousson Project                               *
  *                                                                       *
  * All rights reserved.                                                  *
  *                                                                       *
@@ -32,43 +32,53 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /**
- *  Lousson\Config\GenericConfigTest class definition
+ *  Lousson\Config\AnyConfigEntity interface declaration
  *
  *  @package    org.lousson.config
- *  @copyright  (c) 2012 - 2013, The Lousson Project
+ *  @copyright  (c) 2013, The Lousson Project
  *  @license    http://opensource.org/licenses/bsd-license.php New BSD License
- *  @author     Attila Levai <alevai at quirkies.org>
+ *  @author     Nils Gotzhein <nils.gotzhein at gmail.com>
  *  @author     Mathias J. Hennig <mhennig at quirkies.org>
  *  @filesource
  */
-namespace Lousson\Config\Generic;
-
-/** Dependencies: */
-use Lousson\Config\AbstractConfigEntityTest;
-use Lousson\Config\Generic\GenericConfig;
+namespace Lousson\Config;
 
 /**
- *  A test case for the GenericConfig implementation
+ *  An interface for editable configuration entities
  *
- *  @since      lousson/Lousson_Config-0.2.0
+ *  The AnyConfigEntity interface declares an interface for classes that
+ *  provide configuration options which are editable at runtime.
+ *
+ *  @since      lousson/Lousson_Config-1.2.0
  *  @package    org.lousson.config
  */
-final class GenericConfigTest extends AbstractConfigEntityTest
+interface AnyConfigEntity
 {
     /**
-     *  Obtain the config entity to test
+     *  Update the value of a particular option
      *
-     *  The getConfigEntity() method returns the AnyConfigEntity object
-     *  that is about to be tested.
+     *  The setOption() method is used to assign the given $value to the
+     *  option identified by the given $name.
      *
-     *  @return \Lousson\Config\AnyConfigEntity
-     *          A config entity is returned on success
+     *  @param  string              $name           The option name
+     *  @param  mixed               $value          The option value
+     *
+     *  @throws \Lousson\Config\AnyConfigException
+     *          Raised in case the $name or $value is malformed
      */
-    public function getConfigEntity()
-    {
-        $config = new GenericConfig();
-        return $config;
-    }
+    public function setOption($name, $value);
 
+    /**
+     *  Delete the value of a particular option
+     *
+     *  The delOption() method is used to remove the given option
+     *  identified by the given $name.
+     *
+     *  @param  string              $name           The option name
+     *
+     *  @throws \Lousson\Config\AnyConfigException
+     *          Raised in case the $name is malformed
+     */
+    public function delOption($name);
 }
 

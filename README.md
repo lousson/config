@@ -53,6 +53,69 @@ GitHub is also used to track issues like bugs and feature-requests:
 
 Pull requests and other contributions are welcome!
 
+Example
+-------
+
+The CallbackSQL* classes rely on a SQL compatible data storage with
+existing data tables, which comply with a certain pattern. The following
+SQL statements serve the purpose of providing CREATE TABLE statements
+for exemplary use.
+
+    CREATE  TABLE config.member_config (
+        id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
+        option_name enum('sedo.marketplace.bcp.rows_per_page') NOT NULL,
+        entity_id mediumint(10) UNSIGNED NULL COMMENT 'Refers to MEMBER.Id',
+        option_value VARCHAR(255) NOT NULL ,
+        created DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+        changed TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ,
+        PRIMARY KEY (id) ,
+        UNIQUE KEY `member_config__uk_option_name_entity_id` (`option_name`,`entity_id`),
+        INDEX member_config__k_entity_id (entity_id)
+    )   ENGINE = InnoDB;
+
+    # Table to store the history of deleted and updated records
+    CREATE TABLE member_config_history (
+    	    id int(10) unsigned NOT NULL AUTO_INCREMENT,
+	    member_config_id int(10) unsigned NOT NULL,
+	    option_name enum('sedo.marketplace.bcp.rows_per_page') NOT NULL,
+	    entity_id mediumint(10) unsigned DEFAULT NULL COMMENT 'Refers to MEMBER.Id',
+	    option_value varchar(255) NOT NULL,
+	    created datetime NOT NULL,
+	    changed timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	    PRIMARY KEY (id),
+	    KEY member_config_history__k_member_config_id (member_config_id)
+    )  ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+    # Trigger to fill the 'created' field
+    DELIMITER $$
+    CREATE TRIGGER trg_member_config_before_insert BEFORE INSERT ON member_config
+          FOR EACH ROW
+              BEGIN
+          IF NEW.created = '0000-00-00 00:00:00' THEN SET NEW.created = NOW();
+      END IF;
+          END$$
+
+
+    DELIMITER ;
+
+    # Trigger to insert the record into history table 'member_config_history' for deleted records
+    DELIMITER $$
+    CREATE TRIGGER trg_member_config_after_delete AFTER DELETE ON member_config
+         FOR EACH ROW
+         BEGIN
+         INSERT INTO member_config_history ( member_config_id, option_name,entity_id,option_value,created ) VALUES (OLD.id, OLD.option_name,OLD.entity_id,OLD.option_value,OLD.created);
+         END $$
+    DELIMITER ;
+
+    # Trigger to insert the record into history table 'member_config_history' for updated records
+    DELIMITER $$
+    CREATE TRIGGER trg_member_config_after_update AFTER UPDATE ON member_config
+         FOR EACH ROW
+         BEGIN
+         INSERT INTO member_config_history ( member_config_id, option_name,entity_id,option_value,created ) VALUES (OLD.id, NEW.option_name,NEW.entity_id,NEW.option_value,NEW.created);
+         END $$
+    DELIMITER ;
+
 
 Copyright & License
 -------------------

@@ -149,6 +149,7 @@ abstract class AbstractConfigTest extends PHPUnit_Framework_TestCase
     {
         $parameters[] = array(" :invalid", array("foo" => "bar"));
         $parameters[] = array("123456789", array("foo" => "bar"));
+        $parameters[] = array("", array("foo" => "bar"));
 
         return $parameters;
     }
